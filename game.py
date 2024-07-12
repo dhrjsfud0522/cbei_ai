@@ -4,8 +4,8 @@ import os
 
 pygame.init()
 
-sc_w = 800
-sc_h = 600
+sc_w = 512
+sc_h = 512
 screen = pygame.display.set_mode((sc_w, sc_h))
 pygame.display.set_caption('game')
 clock = pygame.time.Clock()
@@ -13,9 +13,12 @@ clock = pygame.time.Clock()
 current_path = os.path.dirname(__file__)
 assets_path = os.path.join(current_path, "assets")
 
-WHITE = (255, 255, 255)
+background_img = pygame.image.load(os.path.join(assets_path, 'plains.png'))
+WHITE = (200, 220, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+
+time = (pygame.time.get_ticks()) // 1000
 
 score = 0
 font = pygame.font.SysFont(None, 55)
@@ -29,7 +32,7 @@ class Player:
         self.img = pygame.image.load(os.path.join(assets_path, 'dino.png'))
         self.w = self.img.get_rect().width
         self.h = self.img.get_rect().height
-        self.x = 100
+        self.x = 30
         self.y = sc_h - self.h
         self.v = 0
         self.jump_force = 15
@@ -51,8 +54,9 @@ class Player:
 
 class Obstacle:
     def __init__(self):
-        self.w = 50
-        self.h = 50
+        self.img = pygame.image.load(os.path.join(assets_path, 'cactus.png'))
+        self.w = self.img.get_rect().width
+        self.h = self.img.get_rect().height
         self.x = sc_w
         self.y = sc_h - self.h
         self.speed = 15
@@ -65,7 +69,7 @@ class Obstacle:
             score += 1
 
     def draw(self):
-        pygame.draw.rect(screen, RED, [self.x, self.y, self.w, self.h])
+        screen.blit(self.img, [self.x, self.y])
 
     def check_collision(self, player):
         if player.x < self.x + self.w and player.x + player.w > self.x and player.y + player.h > self.y:
@@ -92,6 +96,7 @@ def main():
             running = False
 
         screen.fill(WHITE)
+        screen.blit(background_img, [0, 230])
         player.draw()
         obstacle.draw()
         display_score(score)
